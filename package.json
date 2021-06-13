@@ -1,0 +1,11 @@
+{
+  "name": "ecommerce",
+  "version": "1.0.0",
+  "description": "Ecommerce application using MERN Stack",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Abdul Karim Ansari",
+  "license": "ISC"
+}
