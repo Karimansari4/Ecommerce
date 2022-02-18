@@ -24,8 +24,7 @@ exports.getProduct = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
     try {
-        // const proImage = req.files.proImage
-        // const { itemName, quantity, price, totalAmount, size, sell_price } = req.body
+        
         const proImage = req.files.proImage
         const userId = req.params.id
         const itemName = req.body.itemName
@@ -54,7 +53,7 @@ exports.createProduct = async (req, res) => {
                     return res.status(400).json({msg: 'Please Enter Total Amount'})
                 }else if(size === '0'){
                     return res.status(400).json({msg: 'Please Enter Size'})
-                }else if(!sell_price > price){
+                }else if(!sell_Price > price){
                     return res.status(400).json({msg: 'Please Enter Sell Price more than Purche Price'})
                 }else if(sell_Price.length == 0){
                     return res.status(400).json({msg: 'Please Enter Sell Price'})
@@ -66,9 +65,11 @@ exports.createProduct = async (req, res) => {
                         }
                     })
                     const products = new Product({itemName, quantity, price, totalAmount, size, sell_Price, proImages: fileName, userId})
-                    console.log("data: ", products);
-                    const resutl = await products.save()
-                    if(resutl){
+                    // console.log("data: ", products);
+                    const result = await products.save()
+                    // console.log('submited: ', result);
+                    if(result){
+                        // console.log('this is if condition submit');
                         return res.status(200).json({msg: 'Product Created Successfully'})
                     }else{
                         return res.status(400).json({msg: 'Product Failed to Create'})
@@ -80,7 +81,7 @@ exports.createProduct = async (req, res) => {
             }else{
                 return res.status(403).json({msg: 'Access is Denied!'})
             }
-            // res.status(200).json({msg: 'This is products from serverS'})
+            // res.status(200).json({msg: 'This is products from serverS'}) category add to cart sub admin
         }else{
             return res.status(404).json({msg: 'Please Login to Admin Account'})
         }
