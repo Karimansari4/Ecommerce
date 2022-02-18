@@ -2,6 +2,26 @@ const User = require('../Models/Users')
 const Product = require('../Models/Product')
 const path = require('path')
 
+exports.getProduct = async (req, res) => {
+    let { page } = req.query
+
+    page = page ? page : 1
+
+    const productPerPage = 6
+
+    let startIndex = productPerPage * page - productPerPage
+    let endIndex = productPerPage * page
+
+    try {
+        const result = await Product.find().sort({createAt: -1})
+        const filterResult = result.slice(startIndex, endIndex)
+
+        res.status(200).json({result, filterResult})
+    } catch (error) {
+        res.status(403).json({msg: 'Unable to get Products'})
+    }
+}
+
 exports.createProduct = async (req, res) => {
     try {
         // const proImage = req.files.proImage
@@ -13,11 +33,14 @@ exports.createProduct = async (req, res) => {
         const price = req.body.price
         const totalAmount = req.body.totalAmount
         const size = req.body.size
-        const sell_price = req.body.sell_price
-        
+        const sell_Price = req.body.sell_price
+        console.log("sell price: ", sell_Price);
+        // console.log('id: ', userId);
         if(userId){
-            const userData = await User.findOne({__id: userId})
-            console.log("user: ", userData);
+            // console.log('id: ', userId);
+            const userData = await User.findOne({_id: userId})
+            // console.log("user: ", userData);
+            // console.log('role: ', userData.role);
             if(userData.role === 'admin'){
                 if(itemName === ''){
                     return res.status(400).json({msg: 'Please Enter Item Name'})
@@ -33,7 +56,7 @@ exports.createProduct = async (req, res) => {
                     return res.status(400).json({msg: 'Please Enter Size'})
                 }else if(!sell_price > price){
                     return res.status(400).json({msg: 'Please Enter Sell Price more than Purche Price'})
-                }else if(sell_price.length == 0){
+                }else if(sell_Price.length == 0){
                     return res.status(400).json({msg: 'Please Enter Sell Price'})
                 }else{
                     const fileName = `${itemName}${path.extname(proImage.name)}`
@@ -42,12 +65,20 @@ exports.createProduct = async (req, res) => {
                             console.log("err: ", err);
                         }
                     })
-                    const products = new Product({itemName, quantity, price, totalAmount, size, sell_price, proImages: fileName, userId})
-                    console.log("products: ", products);
-                    res.status(200).json({msg: 'This is products'})
+                    const products = new Product({itemName, quantity, price, totalAmount, size, sell_Price, proImages: fileName, userId})
+                    console.log("data: ", products);
+                    const resutl = await products.save()
+                    if(resutl){
+                        return res.status(200).json({msg: 'Product Created Successfully'})
+                    }else{
+                        return res.status(400).json({msg: 'Product Failed to Create'})
+                    }
+                    // return res.status(404).json({msg: 'Something went wrong'})
                 }
-            }else{
+            }else if(userData.role === 'user'){
                 return res.status(403).json({msg: 'Access Denied!'})
+            }else{
+                return res.status(403).json({msg: 'Access is Denied!'})
             }
             // res.status(200).json({msg: 'This is products from serverS'})
         }else{

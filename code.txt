@@ -244,3 +244,84 @@ function App() {
 }
 
 export default App;
+
+
+
+
+import { BrowserRouter as Router, Route, Routes} from "react-router-dom";
+import NavBar from './components/NavBar';
+import Signup from './components/Signup'
+import Signin from './components/Signin'
+import Dashboard from './components/Dashboard'
+import Home from "./components/Home";
+import Entry from "./components/Entry";
+import { createContext, useEffect, useReducer, useState } from "react";
+import jwtDecode from "jwt-decode";
+import { initialState, reducer } from "./reducer/UseReducer";
+
+export const UserContext = createContext()
+
+function App() {
+  
+  const [state, dispatch] = useReducer(reducer, initialState)
+  const [user, setUser] = useState('')
+  // console.log("user in app: ", user);
+
+  const isLoggedIn = () => {
+    const token = localStorage.getItem('token')
+    if(token){
+      setUser(jwtDecode(token).result)
+      // console.log('this is isLoggedIn');
+    }else {
+      console.log('this is else part of isLoggedIn');
+    }
+  }
+
+  const getUser = () => {
+
+    const token = localStorage.getItem("token");
+    if(token){
+      
+        let decodedToken = jwtDecode(token);
+        // console.log("Decoded Token", decodedToken);
+        let currentDate = new Date();
+
+        // JWT exp is in seconds
+        if (decodedToken.exp * 1000 < currentDate.getTime()) {
+            // console.log("Token expired.");
+            localStorage.removeItem('token')
+        } else {
+            console.log("Valid token");   
+            // result = true;
+            setUser(decodedToken.result)
+            
+        }
+    }else{
+        console.log('Please SignIn this is navbar');
+    }
+}
+
+  useEffect(() => {
+    isLoggedIn()
+    getUser()
+  }, [state])
+
+  return (
+    <UserContext.Provider value={{state, dispatch}}>
+
+      <Router>
+        { user ? <NavBar user={user} /> : <Routes><Route exact path="/signin" element={<Signin />} /></Routes>}
+        {/* <NavBar /> */}
+        <Routes>
+          <Route exact path='/' element={<Home user={user} />}  />
+          <Route exact path="/dashboard" element={<Dashboard user={user} />}  />
+          <Route exact path="/entry" element={<Entry user={user} />} />
+          <Route exact path="/signup" element={ <Signup /> } />
+          {/* <Route exact path="/signin" element={<Signin />} /> */}
+        </Routes>
+      </Router>
+    </UserContext.Provider>
+  );
+}
+
+export default App;
