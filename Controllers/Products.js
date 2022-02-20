@@ -7,7 +7,7 @@ exports.getProduct = async (req, res) => {
 
     page = page ? page : 1
 
-    const productPerPage = 6
+    const productPerPage = 12
 
     let startIndex = productPerPage * page - productPerPage
     let endIndex = productPerPage * page
@@ -33,7 +33,7 @@ exports.createProduct = async (req, res) => {
         const totalAmount = req.body.totalAmount
         const size = req.body.size
         const sell_Price = req.body.sell_price
-        console.log("sell price: ", sell_Price);
+        // console.log("sell price: ", sell_Price);
         // console.log('id: ', userId);
         if(userId){
             // console.log('id: ', userId);
