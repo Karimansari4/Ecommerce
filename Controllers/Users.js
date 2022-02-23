@@ -23,7 +23,8 @@ exports.getUser = async (req, res) => {
 }
 
 exports.signup = async(req, res) => {
-    
+    /* console.log('user: ', req.body);
+    console.log('file: ', req.files.profilePicture); */
     try {
         const { name, email, password, role, contact, address } = req.body
         const file = req.files.profilePicture
@@ -52,6 +53,7 @@ exports.signup = async(req, res) => {
             const hashdPass = await bcrypt.hash(password, saltRounds)
             const users = new User({name, email, password: hashdPass, role, contact, address, profilePicture: fileName})
             const result = await users.save()
+            console.log("result: ", result);
             if(result){
                 const token = craeteToken(result)
                 return res.status(200).json({msg: 'SignUp Successfully', token})
@@ -88,7 +90,7 @@ exports.signin = async (req, res) => {
                     res.status(400).json({msg: 'Please email or password are incorrect'})
                 }
             }else{
-                res.status(404).json({msg: 'Email not found'})
+                res.status(404).json({msg: 'Email not found? Register Please'})
             }
         }
     } catch (error) {

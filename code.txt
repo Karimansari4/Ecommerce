@@ -325,3 +325,188 @@ function App() {
 }
 
 export default App;
+
+
+
+NavBar
+
+
+import { React, useContext,useEffect,useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import jwtDecode from "jwt-decode";
+
+
+//*****************************************************Degining dependency Start***********************************************//
+import { AppBar, Toolbar, ListItem, Typography, Box, IconButton, Menu, Container, Avatar, Button, Tooltip, MenuItem, Badge } from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu';
+import { UserContext } from "../App";
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import ItemCard from "./itemCard";
+//*****************************************************Degining dependency End*************************************************//
+    
+
+
+const NavBar = (props) => {
+
+//******************************************************Degining Part Start****************************************************//
+    const [anchorElNav, setAnchorElNav] = useState(null);
+    const [anchorElUser, setAnchorElUser] = useState(null);
+
+    const handleOpenNavMenu = (event) => {
+        setAnchorElNav(event.currentTarget)
+    }
+    const handleOpenUserMenu = (event) => {
+        setAnchorElUser(event.currentTarget)
+    }
+    const handleCloseNavMenu = () => {
+        setAnchorElNav(null)
+    }
+    const handleCloseUserMenu = () => {
+        setAnchorElUser(null)
+    }
+//******************************************************Degining Part End******************************************************//
+    const navigate = useNavigate()
+
+    const {state, dispatch} = useContext(UserContext)
+    
+    const [user, setUser] = useState(props.user)
+    
+    const role = props.role
+    // console.log("this is role in navbar: ", role);
+    const logout = () => {
+        navigate('/signin')
+        localStorage.removeItem('token')
+        dispatch({type: "USER", payload: false})
+    }
+    
+    
+    return(
+        <AppBar position="static" >
+            <Container maxWidth="xl">
+                <Toolbar disableGutters>
+                    <Typography variant="h6" noWrap component="div"
+                        sx={{ mr: 2, display: { xs: 'none', md: 'flex' } }}
+                    >
+                        LOGO
+                    </Typography>
+
+                    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none'} }} >
+                        <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" 
+                            aria-haspopup="true" onClick={handleOpenNavMenu} color="inherit" >
+                            <MenuIcon />
+                        </IconButton>
+                        <Menu id="menu-appbar" anchorEl={anchorElNav} style={{height: '35vh'}}
+                            anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }} keepMounted
+                            transformOrigin={{ vertical: 'top', horizontal: 'left', }} 
+                            open={Boolean(anchorElNav)} onClose={handleCloseNavMenu}
+                            sx={{ display: { xs: 'block', md: 'none' }, }}
+                        >
+                            <MenuItem onClick={handleCloseNavMenu}>
+                                <Typography>
+                                    <Link to="/" style={{ textDecoration: 'none'}}>Home</Link>
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handleCloseNavMenu}>
+                                <Typography>
+                                    <Link to="/dashboard" style={{ textDecoration: 'none'}}>Dashboard</Link>
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handleCloseNavMenu}>
+                                <Typography>
+                                    {role === 'admin' ? <Link to="/entry" style={{ textDecoration: 'none'}}>Goods Entery</Link> : ''}
+                                </Typography>
+                            </MenuItem>
+                        </Menu>
+                    </Box>
+                    <Typography variant="h6" noWrap component="div"
+                        sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}
+                    >
+                        LOGO
+                    </Typography>
+                    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+                        <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+                            <ListItem >
+                                <Link to="/" style={{ color: 'white', textDecoration: 'none'}}>Home</Link>
+                            </ListItem>
+                        </Button>
+                        <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+                            <ListItem >
+                                <Link to="/dashboard" style={{ color: 'white', textDecoration: 'none'}}>Dashboard</Link>
+                            </ListItem>
+                        </Button>
+                        <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+                            <ListItem >
+                                {role === 'admin' ? <Link to="/entry" style={{ color: 'white', textDecoration: 'none'}}>Goods Entery</Link> : ''}
+                                {/* <Link to="/entry" style={{ color: 'white', textDecoration: 'none'}}>Goods Entry</Link> */}
+                            </ListItem>
+                        </Button>
+                        {/* <MenuItem>
+                                <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                                <Badge badgeContent={4} color="error">
+                                    <AddShoppingCartIcon />
+                                </Badge>
+                                </IconButton>
+                                <p>Cart</p>
+                            </MenuItem> */}
+                    </Box>
+                    {/* { user ? <ItemCard /> : ''} */}
+                    {
+                        user ? (<Box sx={{ flexGrow: 0 }}>
+                            <Tooltip title="Profile">
+                                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                    <Avatar alt="Karim" src={process.env.PUBLIC_URL + `/Users/${user.profilePicture}`} />
+                                </IconButton>
+                            </Tooltip>
+                            
+                            <Menu sx={{ mt: '45px' }} id="menu-appbar" anchorEl={anchorElUser} style={{height: '34vh',}}
+                                anchorOrigin={{ vertical: 'top', horizontal: 'right'}} keepMounted
+                                transformOrigin={{ vertical: 'top', horizontal: 'right'}} open={Boolean(anchorElUser)} onClose={handleCloseUserMenu}
+                            >
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography>
+                                        Name: {user.name}
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography>
+                                        Email : {user.email}
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography>
+                                        Contact : {user.contact}
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography>
+                                        Address : {user.address} 
+                                    </Typography>
+                                </MenuItem>
+                                <MenuItem onClick={handleCloseNavMenu}>
+                                    <Typography>
+                                        <Button onClick={logout}>LogOut</Button>
+                                    </Typography>
+                                </MenuItem>
+                            </Menu>
+                        </Box>) : (
+                            <>
+                            <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+                                <ListItem >
+                                    <Link to="/signin" style={{ color: 'white', textDecoration: 'none'}}>SignIn</Link>
+                                </ListItem>
+                            </Button>
+                            <Button onClick={handleCloseNavMenu} sx={{ my: 2, color: 'white', display: 'block' }}>
+                                <ListItem>
+                                    <Link to="/signup" style={{ color: 'white', textDecoration: 'none'}}>SignUp</Link>
+                                </ListItem>
+                            </Button>
+                            </>
+                        )
+                    }
+                    {/* { user ? <ItemCard /> : ''} */}
+                </Toolbar>
+            </Container>
+        </AppBar>
+    );
+}
+export default NavBar
