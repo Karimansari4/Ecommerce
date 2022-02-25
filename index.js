@@ -6,16 +6,20 @@ const mongoose = require('mongoose')
 const fileUpload = require('express-fileupload')
 const userRouter = require('./Routes/User')
 const proRouter = require('./Routes/Product')
+const path = require('path');
 
 app.use(cors())
 
-mongoose.connect('mongodb://localhost:27017/e-commerce', (err, con) => {
+mongoose.connect('mongodb+srv://Ecommerce-user:JobKarim@cluster0.q1qqd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', (err, con) => {
     if(err) throw err
     console.log('Database Connected');
 })
 
 app.use(fileUpload())
 app.use(express.json())
+
+app.use(express.static(path.join(__dirname, 'build')));
+app.use(express.static(__dirname + '/bulid/Products'));
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -25,7 +29,7 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.get('/', (req, res) => res.send('Hello World!'))
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')))
 
 app.use('/user', userRouter)
 app.use('/product', proRouter)

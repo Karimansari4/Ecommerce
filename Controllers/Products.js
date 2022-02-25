@@ -59,7 +59,7 @@ exports.createProduct = async (req, res) => {
                     return res.status(400).json({msg: 'Please Enter Sell Price'})
                 }else{
                     const fileName = `${itemName}${path.extname(proImage.name)}`
-                    proImage.mv(`client/public/Products/${fileName}`, (err) => {
+                    proImage.mv(`build/Products/${fileName}`, (err) => {
                         if(err){
                             console.log("err: ", err);
                         }
@@ -88,6 +88,27 @@ exports.createProduct = async (req, res) => {
         // res.send('this is product')
     } catch (error) {
         console.log("error: ", error);
+        res.status(500).json({msg: error})
+    }
+}
+
+exports.deleteProduct = async (req, res) => {
+    const id = req.params.id
+    try {
+        const result = await Product.findById(id)
+        
+        if(result){
+            const deleteResult = await Product.findByIdAndDelete(id)
+            if(deleteResult){
+                return res.status(200).json({msg: `${result.itemName} deleted successfully`})
+            }else{
+                return res.status(400).json({msg: `${result.itemName} failed to delete`})
+            }
+        }else{
+            return res.status(400).json({msg: 'Product Not Found?'})
+        }
+    } catch (error) {
+        console.log("error on delet product: ", error);
         res.status(500).json({msg: error})
     }
 }

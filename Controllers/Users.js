@@ -53,7 +53,7 @@ exports.signup = async(req, res) => {
             const hashdPass = await bcrypt.hash(password, saltRounds)
             const users = new User({name, email, password: hashdPass, role, contact, address, profilePicture: fileName})
             const result = await users.save()
-            console.log("result: ", result);
+            // console.log("result: ", result);
             if(result){
                 const token = craeteToken(result)
                 return res.status(200).json({msg: 'SignUp Successfully', token})

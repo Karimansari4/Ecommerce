@@ -7,7 +7,8 @@ import { AppBar, Toolbar, ListItem, Typography, Box, IconButton, Menu, Container
 import MenuIcon from '@mui/icons-material/Menu';
 //*****************************************************Degining dependency End*************************************************//
     
-
+//mongodb+srv://Ecommerce-user:JobKarim@cluster0.q1qqd.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+//JobKarim
 
 const NavBar = () => {
 
